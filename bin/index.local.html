@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8'/>
+	<title></title>
+	<meta name='viewport' content='width=device-width,height=device-height,viewport-fit=cover,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no'/>
+	<meta name='apple-mobile-web-app-capable' content='yes' />
+	<meta name='full-screen' content='true' />
+	<meta name='screen-orientation' content='landscape' />
+	<meta name='x5-fullscreen' content='true' />
+	<meta name='360-fullscreen' content='true' />
+	<meta http-equiv='expires' content='0' />
+</head>
+<style>
+</style>
+<body style="background-color:#000">
+	<script src="cordova.js"></script>
+
+	<script src="js/jquery.min.js"></script>
+
+	<script>window.server='http://bjl8000.com:7020/'</script>
+	<!--<script src="entry.js"></script>-->
+	<script>
+	    function loadScript(src, callback) {
+            jQuery.ajax({
+				crossDomain: true,
+				dataType: "script",
+				url: src,
+				cache:true,
+				success: function(){
+					typeof callback === 'function' && callback();
+				},
+				error: function(e){
+					typeof callback === 'function' && callback(e);
+				}
+            })
+        }
+		function onDeviceReady() {
+			document.addEventListener('backbutton', function(e){
+				e.preventDefault();
+				if (confirm('确定退出吗？')) navigator.app.exitApp();
+			}, false);
+			if (window.AndroidFullScreen) {
+				AndroidFullScreen.immersiveMode(function() {}, function() {});
+			} else if (window.StatusBar) {
+				StatusBar.overlaysWebView=false;
+				StatusBar.hide();
+			}
+			if (window.device.platform === 'iOS') {
+				cordova.plugins.iosrtc && cordova.plugins.iosrtc.registerGlobals();
+			}
+			loadScript('./entry.js');
+		}
+		document.addEventListener('deviceready', onDeviceReady, false);	
+		(function(window){
+			// Really basic check for the ios platform
+			// https://stackoverflow.com/questions/9038625/detect-if-device-is-ios
+			var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+			// Get the device pixel ratio
+			var ratio = window.devicePixelRatio || 1;
+
+			// Define the users device screen dimensions
+			var screen = {
+				width : window.screen.width * ratio,
+				height : window.screen.height * ratio
+			};
+
+			// iPhone X Detection
+			if (iOS && screen.width == 1125 && screen.height === 2436) {
+
+				// Set a global variable now we've determined the iPhoneX is true
+				window.iphoneX = true;
+
+			}
+		})(window);
+	</script>
+	<script src="http://sdk.talkingdata.com/g/h5/v1/5BC096F31D8F48CF9238213D2FA47E19" type="text/javascript"></script>
+</body>
+</html>
